@@ -1,3 +1,5 @@
+using Middleware1;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -22,17 +24,19 @@ app.Map("/test", async (pipeBuilder) =>
         await context.Response.WriteAsync("2 End<br/>");
     });
 
+    pipeBuilder.UseMiddleware<Test1MiddleWare>();
+
     pipeBuilder.Run(async ctx => // 最後一個中間件沒有next
     {
         await ctx.Response.WriteAsync("hello middleware<br/>");
     });
 
-    pipeBuilder.Use(async (context, next) => // 第四個中間件，不會執行，因為已經有Run了
-    {
-        await context.Response.WriteAsync("3 Start<br/>");
-        await next.Invoke();
-        await context.Response.WriteAsync("3 End<br/>");
-    });
+    //pipeBuilder.Use(async (context, next) => // 第四個中間件，不會執行，因為已經有Run了
+    //{
+    //    await context.Response.WriteAsync("3 Start<br/>");
+    //    await next.Invoke();
+    //    await context.Response.WriteAsync("3 End<br/>");
+    //});
 });
 
 app.Run();
